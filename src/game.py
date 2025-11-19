@@ -1,6 +1,8 @@
 import pygame
 from pygame import *
 
+from src.menu import *
+
 
 class Game:
     def __init__(self):
@@ -17,7 +19,9 @@ class Game:
         #Window Size
         self.DISPLAY_W , self.DISPLAY_H = 480, 270
 
-        self.screen = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
+        self.display = pygame.Surface((self.DISPLAY_W, self.DISPLAY_H))
+
+        self.window = pygame.display.set_mode((self.DISPLAY_W, self.DISPLAY_H))
 
         self.font_name = pygame.font.get_default_font()
 
@@ -27,6 +31,12 @@ class Game:
 
         self.dt = 0.01
 
+        #Set the current menu to be main_menu
+        self.main_menu = MainMenu(self)
+        self.options_menu = OptionsMenu(self)
+
+        self.curr_menu = self.main_menu
+
     def check_events(self):
         
         #check every event that occurs
@@ -35,6 +45,7 @@ class Game:
             #Check for clicking the X button
             if event.type == pygame.QUIT:
                 self.running, self.playing = False, False
+                self.curr_menu.run_display = False
             
             #Check if a key is being pressed down
             if event.type == pygame.KEYDOWN:
@@ -54,25 +65,24 @@ class Game:
 
         #Event loop:
         while self.playing:
-            print("Is Playing: ", self.running)
             self.check_events()
-            self.reset_keys()
-
+            
             if self.START_KEY:
                 self.playing = False
-                      
-            
 
+            self.reset_keys()
+                      
             #Set Canvas to all black
-            self.screen.fill(self.BLACK)    
+            self.display.fill(self.BLACK)    
+
             self.draw_text("Thanks for playing", 20, self.DISPLAY_W/2, self.DISPLAY_H/2)
 
             #Align display with window
-            #self.window.blit(self.display, (0,0))    
-            #pygame.display.update()
+            self.window.blit(self.display, (0,0))    
+            pygame.display.update()
 
             #Update Display:
-            pygame.display.flip()
+            #pygame.display.flip()
 
             dt = self.clock.tick(60)  / 1000
             dt = max(0.001, min(0.1, dt))
@@ -85,5 +95,5 @@ class Game:
         text_rect = text_surface.get_rect() #x, y, Width, Height
         text_rect.center = (x, y) #Center text relative to x,y
 
-        #Render
-        self.screen.blit(text_surface, text_rect)
+        #blit over the window?
+        self.display.blit(text_surface, text_rect)
