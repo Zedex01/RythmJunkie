@@ -13,7 +13,7 @@ def main():
     while game.running:
         #Displays whatever the current menu is
         game.curr_menu.display_menu()
-        
+         
         #Run game loop
         game.game_loop()
 

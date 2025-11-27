@@ -22,7 +22,7 @@ class Menu():
     #Helper Functions
     def draw_cursor(self):
         #Draw the cursor on the screen
-        self.game.draw_text("*", 30, self.cursor_rect.x, self.cursor_rect.y)
+        self.game.draw_text("*", 30, self.cursor_rect.x, self.cursor_rect.y + 6 )
 
     #Update surface
     def blit_screen(self):
@@ -140,9 +140,9 @@ class OptionsMenu(Menu):
         self.state = "Volume"
 
         #Text Positions
-        self.title_x, self.title_y = self.mid_w/2, self.mid_h/2 - 20
-        self.vol_x, self.vol_y = self.mid_w/2, self.mid_h/2 + 20
-        self.controls_x, self.controls_y = self.mid_w/2, self.mid_h/2 + 40
+        self.title_x, self.title_y = self.mid_w, self.mid_h - 20
+        self.vol_x, self.vol_y = self.mid_w, self.mid_h + 20
+        self.controls_x, self.controls_y = self.mid_w, self.mid_h + 40
 
         #Init Cursor Pos:
         self.cursor_rect.midtop = (self.vol_x + self.offset, self.vol_y)
@@ -182,10 +182,18 @@ class OptionsMenu(Menu):
                 self.state = "Volume"
                 self.cursor_rect.midtop = (self.vol_x + self.offset, self.vol_y)
 
-        
-        
+          
 
 class CreditsMenu(Menu):
     def __init__(self):
         super().__init__()
-        pass
+        #Text Positions
+        self.title_x, self.title_y = self.mid_w, self.mid_h - 20
+        self.author_x, self.author_y = self.mid_w, self.mid_h + 20
+
+        self.back_x, self.back_y = self.game.DISPLAY_W - 50, self.game.DISPLAY_H - 50
+
+
+    def display_menu(self):
+        
+        
