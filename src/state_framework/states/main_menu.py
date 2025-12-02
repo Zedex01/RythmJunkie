@@ -3,11 +3,11 @@ from states.state import State
 
 #inherit from abstract class 'State'
 class MainMenu(State):
-    
+
     def enter(self):
         pass
 
-    def exit(self):
+    def leave(self):
         pass
 
     def handle_events(self, events) -> bool:
@@ -36,3 +36,11 @@ class MainMenu(State):
     def draw(self, screen):
         #Fill screen red
         screen.fill((255,50,50))
+
+        #Render Text
+        title_text = self.font.render("Main Menu", True, (255,255,255))
+        prompt_text = self.small_font.render("Press G to Start", True, (255,255,255))
+
+        #Position Text
+        screen.blit(title_text, (50,50))
+        screen.blit(prompt_text, (50,120))

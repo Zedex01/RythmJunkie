@@ -1,13 +1,11 @@
 import pygame
 from pygame import *
 
-from state_machine import StateMachine
-
+from state_machines import Core
 #States
-from states.main_menu import MainMenu
+from states.states import Main
 
 def main():
-
     #init game
     pygame.init()
     pygame.display.set_caption("Rythm Junkie!!!")
@@ -20,9 +18,9 @@ def main():
     running = True
 
     #Create the main state machine
-    core = StateMachine()
+    core = Core()
     #Set inital state
-    core.change_state(MainMenu(core))
+    core.change_state(Main(core))
 
     while running:
 
