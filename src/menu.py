@@ -195,5 +195,6 @@ class CreditsMenu(Menu):
 
 
     def display_menu(self):
+        pass
         
         
