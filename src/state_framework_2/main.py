@@ -10,6 +10,9 @@ def main():
     pygame.init()
     pygame.display.set_caption("Rythm Junkie!!!")
 
+    #Initialize Audio:
+    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
+
     screen = pygame.display.set_mode((480, 270))
 
     clock = pygame.time.Clock()

@@ -3,8 +3,10 @@ States classes
 
 """
 import pygame
+from pygame import *
 from states._state import State
 from player import Player
+from note import Note
 
 class Main(State):
     def handle_events(self, events) -> bool:
@@ -84,6 +86,9 @@ class Running(State):
         #Spawn player
         self.player = Player(self.state_machine)
 
+        #Spawn Note
+        self.note = Note(Vector2(480, 100))
+
     def enter(self):
         #reset Keys
         self.player.reset_keys()
@@ -106,9 +111,11 @@ class Running(State):
 
     def update(self, dt):
         self.player.update(dt)   
+        self.note.update(dt)
 
     def draw(self, screen):
-        self.player.draw(screen)       
+        self.player.draw(screen)
+        self.note.draw(screen)       
                     
 class Pause(State):
     def __init__(self, state_machine, running_state):
