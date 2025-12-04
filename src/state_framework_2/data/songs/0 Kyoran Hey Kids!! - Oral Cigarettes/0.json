@@ -1,0 +1,14 @@
+{
+    "song": "Sample Song 1",
+    "artist": "dhaifhe",
+    "album": "Sample Album 1",
+    "mapper":"Me",
+    "length": 378.00,
+    "offset":"0.010",
+
+    "notes": [
+        {"time":1.250, "type":"tap", "Lane":1},
+        {},
+        {}
+    ]
+}

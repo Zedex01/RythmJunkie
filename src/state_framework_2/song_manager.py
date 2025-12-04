@@ -29,19 +29,28 @@ class SongManager():
         songs = root / "data" / "songs"
         
         file_name = song_name + ".json"
+        
 
         #build song path
-        song = songs / song_name / file_name
+        #song = songs / song_name / file_name
+        song = songs / song_name / "audio.mp3"
 
-
+        print(song)
+        self.load_song(song)
+    
         #Grab song info
-        with open(song, "r") as f:
-            chart = json.load(f)
+        #with open(song, "r") as f:
+        #    chart = json.load(f)
 
         #Pull the notes into a list
-        notes = chart["notes"]
+        #notes = chart["notes"]
 
-        print(notes)
+        #print(notes)
+
+
+
+
+
 
     def __del__(self): pass
 
@@ -62,6 +71,20 @@ class SongManager():
 
     def spawn_note(self): pass
 
+
+    def load_song(self, song_set_id):         
+        pygame.mixer.music.load(song_set_id)
+    
+    def play_song(self):
+        pygame.mixer.music.play()
+
+    def pause_song(self): pass
+
+    def resume_song(self): pass
+
+    def stop_song(self): pass
+
+
 # ==== Testing state ====
 class TestEnv(State):
     
@@ -69,12 +92,18 @@ class TestEnv(State):
         super().__init__(state_machine)
 
         #Create Song Manager
-        song_name = "song1-artist1"
-        song_manager = SongManager(song_name)
+        song_set_id = "0 Kyoran Hey Kids!! - Oral Cigarettes"
+        song_id = "0"
+        song_manager = SongManager(song_set_id)
+
+        song_manager.play_song()
+x
 
     def enter(self): pass
     def leave(self): pass
-    def handle_events(self, events): pass
+    def handle_events(self, events): 
+        return True
+    
     def update(self, dt): pass
     def draw(self, screen): pass
 
@@ -104,7 +133,9 @@ if __name__ == "__main__":
 
         running = core.handle_events(events)
         core.update(dt)
-        core.draw(screen)      
+        core.draw(screen)  
+
+
         pygame.display.flip()      
 
         dt = clock.tick(60)  / 1000
