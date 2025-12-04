@@ -4,15 +4,16 @@ from pygame import *
 import json
 from pathlib import Path
 
-from note import Note
+from src.note import Note
 
-from states._state import State
-from state_machines import Core
+from src.states._state import State
+from src.state_machines import Core
 
 """
 Song manager has to handle note spawning, audio syncing, pausing??
 
-
+Win + R:
+sndvol.exe - Classic Volume Mixer
 """
 
 class SongManager():

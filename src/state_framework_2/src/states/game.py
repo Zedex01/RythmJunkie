@@ -1,7 +1,7 @@
 import pygame
-from states.state import State
+from src.states.state import State
 
-from player import Player
+from src.player import Player
 
 """
 Has 4 states:

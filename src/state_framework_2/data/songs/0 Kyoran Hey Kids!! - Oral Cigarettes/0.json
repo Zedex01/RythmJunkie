@@ -1,13 +1,18 @@
 {
-    "song": "Sample Song 1",
-    "artist": "dhaifhe",
-    "album": "Sample Album 1",
-    "mapper":"Me",
-    "length": 378.00,
-    "offset":"0.010",
+    "format_version": 1,
+    "song": "Kyoran Hey Kids!!",
+    "artist": "Oral Cigarettes",
+    "album": "FIXION",
+    "mapper":"Zedex",
+    "difficulty": 1,
+    "set_id": 0,
+    "map_id": 0,
+    "length": 100.00,
+    "bpm": 142,
+    "offset": 0.00,
 
     "notes": [
-        {"time":1.250, "type":"tap", "Lane":1},
+        {"time":1.250, "type":"tap", "lane":1},
         {},
         {}
     ]

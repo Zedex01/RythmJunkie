@@ -1,16 +1,17 @@
 import pygame
 from pygame import *
 
-from state_machines import Core
+from src.state_machines import Core
+
 #States
-from states.states import Main
+from src.states.states import Main
 
 def main():
-    #init game
+    #Init game
     pygame.init()
+    #Set window title
     pygame.display.set_caption("Rythm Junkie!!!")
-
-    #Initialize Audio:
+    #Init Audio:
     pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
 
     screen = pygame.display.set_mode((480, 270))
@@ -39,7 +40,6 @@ def main():
         dt = max(0.001, min(0.1, dt))
 
     pygame.quit()
-
 
 if __name__ == "__main__":
     main()

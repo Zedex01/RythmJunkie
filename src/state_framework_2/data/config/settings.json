@@ -1,0 +1,26 @@
+{
+    "users" : [
+        {
+            "default" : [
+                {
+                    "controls": "default",
+                    "master_volume": 100,
+                    "music_volume": 75,
+                    "sound_volume": 100,
+                    "skin": "built-in"
+                }
+            ],
+
+            "Zedex" : [
+                {
+                    "controls": "classic",
+                    "master_volume": 80,
+                    "music_volume": 75,
+                    "sound_volume": 75,
+                    "skin": "custom 1"
+                }
+
+            ]
+        }
+    ]
+}
