@@ -9,6 +9,8 @@ from src.player import Player
 from src.note import Note
 from src.button import Button
 
+from src.events import *
+
 """ 
 Main Entry point, 
 3 Options
@@ -28,6 +30,8 @@ ARROWS to navigate buttons (WASD?)
 class Main(State):
     def __init__(self, state_machine):
         super().__init__(state_machine)
+
+        self.name = "main"
 
         #List of all buttons
         self.btns = ["Play", "Credits", "Exit"]
@@ -74,15 +78,6 @@ class Main(State):
                     elif self.btns[self.curr_btn] == "Exit":
                         return False
 
-
-                ##if 'g' key was pressed:
-                #if event.key == pygame.K_g:
-                #    self.state_machine.change_state(Running(self.state_machine))
-                #
-                ##Switch to settings menu on 's' press
-                #if event.key == pygame.K_s:
-                #    from states.states import Settings
-                #    self.state_machine.change_state(Settings(self.state_machine))
         return True
 
     def update(self, dt):
@@ -134,6 +129,7 @@ class Credits(State):
     """
     def __init__(self, state_machine):
         super().__init__(state_machine)
+        self.name = "credits"
 
         #Buttons
         self.back_btn = Button("Back",Vector2(0,0), Vector2(0,0))
@@ -180,6 +176,47 @@ class Credits(State):
         #draw textbox on screen
         screen.blit(self.text_box, self.text_box_rect)
 
+class SongSelect(State):
+    """
+    Docstring for SongSelect
+
+    Allows Navigation of various songs, move left and right to scroll through songs, shows visual and audio preview
+
+    Functions:
+        - Left/Right
+        - Start
+        - Back
+    """
+
+    def __init__(self, state_machine):
+        super().__init__(state_machine)
+
+    def handle_events(self, events):
+        #Itterate through all events
+        for event in events:
+
+            #Check for custom events
+            if event.type == CUSTOM:
+
+                #Check for events from the input manager
+                if event.system == INPUT:
+                    if event.action == "menu-left":
+                        pass
+                    elif event.action == "menu-right":
+                        pass
+                    elif event.action == "menu-accept":
+                        pass
+                    elif event.action == "menu-back":
+                        #return to main menu
+                        self.state_machine.change_state(Main(self.state_machine))
+
+
+    def update(self, dt):
+        pass
+    
+    def draw(self, screen):
+        screen.fill(50,50,50)
+
 
 
 class Settings(State):
@@ -222,6 +259,7 @@ class Controls(State):
 class Running(State):
     def __init__(self, state_machine):
         super().__init__(state_machine)
+        self.name = "running"
 
         #Spawn player
         self.player = Player(self.state_machine)
@@ -262,6 +300,7 @@ class Pause(State):
         super().__init__(state_machine)
         #Get passed the current instance of the running state
         self.running_state = running_state
+        self.name = "pause"
 
     def handle_events(self, events):
         for event in events:

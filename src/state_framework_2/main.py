@@ -11,8 +11,6 @@ def main():
     pygame.init()
     #Set window title
     pygame.display.set_caption("Rythm Junkie!!!")
-    #Init Audio:
-    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
 
     screen = pygame.display.set_mode((480, 270))
 

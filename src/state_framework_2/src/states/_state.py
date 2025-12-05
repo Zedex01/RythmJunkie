@@ -6,6 +6,7 @@ from pathlib import Path
 
 class State():
     def __init__(self, state_machine):
+        self.name = None
         #For tracking currently highlighted button
         self.curr_btn = None
 

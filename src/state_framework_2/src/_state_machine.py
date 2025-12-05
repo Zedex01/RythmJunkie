@@ -4,10 +4,40 @@
 Docstring for state_framework.state_machine
 
 """
+import pygame
+from src.events import *
+from src.sound_manager import SoundManager
+from src.input_manager import InputManager
+
 class StateMachine:
 
     def __init__(self):
         self.current_state = None
+
+        self.sound_manager = SoundManager()
+        self.input_manager = InputManager()
+
+
+    #Handles all of the events (ex. Key Presses / audio?)
+    def handle_events(self, events):
+
+        self.current_state.handle_events(events)
+
+        #Managers
+        running = self.input_manager.handle_events(events=events)
+        self.sound_manager.handle_events(events=events)
+
+        return running
+    
+        #Updates animations/motions
+    def update(self, dt):
+        self.current_state.update(dt)
+        self.sound_manager.update(dt)
+
+    #Handles things that need to be drawn on the screen
+    def draw(self, screen):
+        self.current_state.draw(screen)
+
 
     #Changes to the new state
     def change_state(self, new_state):
@@ -20,16 +50,9 @@ class StateMachine:
         #Enter the new state
         self.current_state.enter()
 
+        #Post State Change event
+        try:
+            pygame.event.post(pygame.event.Event(CUSTOM, {"system":"state_machine", "action": "changed_state", "new_state":new_state.name}))
+        except Exception as e:
+            print("Event Err: ", e)
 
-    #Updates animations/motions
-    def update(self, dt):
-        self.current_state.update(dt)
-
-    #Handles all of the events (ex. Key Presses / audio?)
-    def handle_events(self, events):
-        running = self.current_state.handle_events(events)
-        return running
-
-    #Handles things that need to be drawn on the screen
-    def draw(self, screen):
-        self.current_state.draw(screen)

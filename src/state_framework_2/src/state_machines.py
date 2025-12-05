@@ -25,6 +25,8 @@ class Core(StateMachine):
         self.small_font = pygame.font.Font(ubuntu, 24)
         self.super_small_font = pygame.font.Font(ubuntu,12)
 
+        
+
 class GameStateMachine(StateMachine):
     def __init__(self):
         super().__init__()
