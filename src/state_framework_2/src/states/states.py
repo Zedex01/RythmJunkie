@@ -44,41 +44,34 @@ class Main(State):
         self.credits_btn = Button("Credits", Vector2(100,35), Vector2(30,120))
         self.exit_btn = Button("Exit", Vector2(100,35), Vector2(30,160))
 
-
     def handle_events(self, events) -> bool:
         for event in events:
-            #Check if the 'X' is pressed on window
-            if event.type == pygame.QUIT:
-                return False
-            
-            #Check which key was pressed:
-            if event.type == pygame.KEYDOWN:
-                
-                #Check for menu navigation
-                if event.key == pygame.K_UP:
-                    if self.curr_btn <= 0:
-                        self.curr_btn = self.last_btn
-                    else:
-                        self.curr_btn -= 1
+            if event.type == CUSTOM:
+                if event.system == INPUT:
+                    #if the menu-up event is called, move 1 button up
+                    if event.action == "menu-up":
+                        if self.curr_btn <= 0:
+                            self.curr_btn = self.last_btn
+                        else:
+                            self.curr_btn -= 1   
+                    #if the menudown event is grabbed, move 1 button down
+                    elif event.action == "menu-down":
+                        if self.curr_btn >= self.last_btn:
+                            self.curr_btn = 0
+                        else:
+                            self.curr_btn += 1 
 
-                if event.key == pygame.K_DOWN:
-                    if self.curr_btn >= self.last_btn:
-                        self.curr_btn = 0
-                    else:
-                        self.curr_btn += 1
+                    #If the accept key is pressed, check which button is selected and perform action
+                    elif event.action == "menu-accept":
+                        if self.btns[self.curr_btn] == "Play":
+                            self.state_machine.change_state(SongSelect(self.state_machine))
 
-                #Check for state changes
-                if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
-                    if self.btns[self.curr_btn] == "Play":
-                        self.state_machine.change_state(SongSelect(self.state_machine))
+                        elif self.btns[self.curr_btn] == "Credits":
+                            self.state_machine.change_state(Credits(self.state_machine))
 
-                    elif self.btns[self.curr_btn] == "Credits":
-                        self.state_machine.change_state(Credits(self.state_machine))
+                        elif self.btns[self.curr_btn] == "Exit":
+                            pygame.event.post(Event(CUSTOM, {SYS:UTIL, ACTION:"quit"}))
 
-                    elif self.btns[self.curr_btn] == "Exit":
-                        return False
-
-        return True
 
     def update(self, dt):
     #Apply changes to button states
@@ -139,13 +132,11 @@ class Credits(State):
 
     def handle_events(self, events):
         for event in events:
-            if event.type == pygame.QUIT:
-                return False
-
             #pressing back returns to main
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE or event.key == pygame.K_BACKSPACE:
-                    self.state_machine.change_state(Main(self.state_machine))
+            if event.type == CUSTOM:
+                if event.system == INPUT:
+                    if event.action == "menu-back":
+                        self.state_machine.change_state(Main(self.state_machine))
         return True
 
     def update(self, dt): pass
@@ -186,10 +177,34 @@ class SongSelect(State):
         - Left/Right
         - Start
         - Back
+
+        Settings ???
+
     """
 
     def __init__(self, state_machine):
         super().__init__(state_machine)
+
+
+        #Get paths
+        self.data_dir = self.state_machine.data_dir
+        self.songs_dir = self.data_dir / "songs"
+
+        #List of sets within the song dir
+        self.sets = []
+
+        #itter through all songs and add them to sets.
+        for set in self.songs_dir.iterdir():
+            self.sets.append(set)
+
+        self.set_index = 0
+        self.max_index = len(self.sets) - 1
+        
+        #Set default active set (TODO: Make Random)
+        self.active_set = self.sets[self.set_index]
+
+        self._change_active_set = False
+
 
     def handle_events(self, events):
         #Itterate through all events
@@ -201,9 +216,21 @@ class SongSelect(State):
                 #Check for events from the input manager
                 if event.system == INPUT:
                     if event.action == "menu-left":
-                        pass
+                        #Make sure to stay within valid set bounds
+                        if self.set_index > 0:
+                            self.set_index -= 1
+                        else:
+                            self.set_index = self.max_index
+                        self._change_active_set = True
+
                     elif event.action == "menu-right":
-                        pass
+                        #Make sure to stay within valid set bounds
+                        if self.set_index < self.max_index:
+                            self.set_index += 1
+                        else:
+                            self.set_index = 0
+                        self._change_active_set = True
+
                     elif event.action == "menu-accept":
                         pass
                     elif event.action == "menu-back":
@@ -212,10 +239,49 @@ class SongSelect(State):
 
 
     def update(self, dt):
-        pass
+        #If there is a change, update the active set
+        if self._change_active_set:
+            self._change_active_set = False
+            self.active_set = self.sets[self.set_index]
+            print("Active Set: ", self.active_set.name)
     
     def draw(self, screen):
-        screen.fill(50,50,50)
+        screen.fill((50,50,50))
+
+        #get screen size dynamically
+        width, height = screen.get_size()
+
+        #BackgroundSurface
+        bg_surface = pygame.Surface((width, height), SRCALPHA)
+        #TODO: Load bg image from song
+        #screen.blit(bg_surface, (0,0))
+
+        #BorderSurface
+        ui_surface = pygame.Surface((width, height), SRCALPHA)
+        #Draw Top & Bottom Border (TODO: Replace image)
+        pygame.draw.rect(ui_surface, ("white"), ((0,0),(width,height*0.1))) #Top Bar
+        pygame.draw.rect(ui_surface, ("white"), ((0,height-height*0.1),(width,height*0.1))) #Bottom Bar
+        #Draw Display_name_box
+        display_name_bg_rect = pygame.Rect(0,0,width*0.25, height*0.1)
+        display_name_bg_rect.center = (width//2, height//10)
+        pygame.draw.rect(ui_surface, ("white"), display_name_bg_rect, border_radius=12)
+        pygame.draw.rect(ui_surface, ("black"), display_name_bg_rect, width = 4, border_radius=12)
+
+        screen.blit(ui_surface, (0,0))
+
+        #ButtonSurface
+        #AlbumSurface?
+
+        #make surface
+        set_name_surface = pygame.Surface((width*0.6,height*0.2), SRCALPHA)
+        
+        #make surface rect
+        set_name_surface_rect = set_name_surface.get_rect(center=(screen.get_rect().center[0], height*0.2))
+
+        set_name_surface.fill((255,255,255,255))
+        #screen.blit(set_name_surface, set_name_surface_rect)
+
+        
 
 
 

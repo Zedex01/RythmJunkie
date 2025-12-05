@@ -12,6 +12,7 @@ SYS = "system"
 INPUT = "input"
 SOUND = "sound"
 STATE = "state"
+UTIL = "util"
 
 ACTION = "action"
 

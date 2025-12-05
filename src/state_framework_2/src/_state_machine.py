@@ -14,30 +14,19 @@ class StateMachine:
     def __init__(self):
         self.current_state = None
 
-        self.sound_manager = SoundManager()
-        self.input_manager = InputManager()
-
-
     #Handles all of the events (ex. Key Presses / audio?)
     def handle_events(self, events):
-
         self.current_state.handle_events(events)
 
-        #Managers
-        running = self.input_manager.handle_events(events=events)
-        self.sound_manager.handle_events(events=events)
 
-        return running
-    
-        #Updates animations/motions
+
+    #Updates animations/motions
     def update(self, dt):
         self.current_state.update(dt)
-        self.sound_manager.update(dt)
 
     #Handles things that need to be drawn on the screen
     def draw(self, screen):
         self.current_state.draw(screen)
-
 
     #Changes to the new state
     def change_state(self, new_state):
