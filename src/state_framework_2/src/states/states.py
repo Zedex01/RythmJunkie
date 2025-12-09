@@ -250,7 +250,8 @@ class SongSelect(State):
 
         #Text_Surface
         song_name_surface = pygame.Surface((width*0.27, height*0.15), SRCALPHA)
-        song_name_surface.fill((0,0,0,0))
+        song_name_surface.fill((0,0,0,0)) #Set surface as transparents
+        
         song_name_surface_rect = song_name_surface.get_rect() #Def pos will be 0, 0
 
         #Set pos on screen
