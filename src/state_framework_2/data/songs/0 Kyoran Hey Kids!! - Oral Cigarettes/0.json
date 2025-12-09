@@ -1,5 +1,5 @@
 {
-    "format_version": 1,
+    "standard": 1,
     "song": "Kyoran Hey Kids!!",
     "artist": "Oral Cigarettes",
     "album": "FIXION",
@@ -10,6 +10,7 @@
     "length": 100.00,
     "bpm": 142,
     "offset": 0.00,
+    "volume_overide": 0.5,
 
     "notes": [
         {"time":1.250, "type":"tap", "lane":1},

@@ -1,0 +1,28 @@
+
+Using HSL makes colors make way more sense.
+
+building a color palette makes way more sense:
+
+Dark theme:
+for your bg you have:
+bg-dark: (0,0,0)
+bg: (0,0,5)
+bg-light: (0,0,10) (buttons)
+
+text: (0,0,95) 
+text-muted: (0,0,70)
+
+Light theme:
+bg-dark: 0,0,90
+bg: 0,0,95
+bg-light: 0,0,100
+
+text: 0,0,5
+text-muted: 0,0, 30
+
+
+maybe bump sat to 5% 
+
+
+great simple subtle border
+add gradient to bg

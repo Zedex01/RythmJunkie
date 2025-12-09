@@ -66,6 +66,8 @@ class InputManager():
                     
                     elif event.key == K_LCTRL:
                         pygame.event.post(Event(CUSTOM, {SYS:INPUT, ACTION:"l_ctrl_down"}))
+
+                    self.debug(event)
                     
                     # ==== Volume Controls ====
                     #Keep Track of Ctrl and Shift using states
@@ -113,24 +115,24 @@ class InputManager():
 
  # ===================================================
 
-                #if event.type == pygame.KEYDOWN: 
-                #if event.key == pygame.K_l:
-                #    pygame.event.post(Event(CUSTOM, {"system":"sound", "action":"load_song", "set_id":"1"}))
-#
-                #if event.key == pygame.K_p:
-                #    pygame.event.post(Event(CUSTOM, {"system":"sound", "action":"play_song"}))
-#
-                #if event.key == pygame.K_s:
-                #    pygame.event.post(Event(CUSTOM, {"system":"sound", "action":"stop_song"}))
-#
-                #if event.key == pygame.K_o:
-                #    pygame.event.post(Event(CUSTOM, {"system":"sound", "action":"pause_song"}))
-                #
-                #if event.key == pygame.K_u:
-                #    pygame.event.post(Event(CUSTOM, {"system":"sound", "action":"unpause_song"}))
-#
-                #if event.key == pygame.K_z or event.key == pygame.K_x:
-                #    pygame.event.post(Event(CUSTOM, {"system":"sound", "action":"play_sound", "sound":"hit"}))
+
+    def debug(self, event):
+        if event.key == pygame.K_l:
+            pygame.event.post(Event(CUSTOM, {"system":"sound", "action":"load_song", "set_id":"1"}))
+        if event.key == pygame.K_p:
+            pygame.event.post(Event(CUSTOM, {"system":"sound", "action":"play_song"}))
+        if event.key == pygame.K_s:
+            pygame.event.post(Event(CUSTOM, {"system":"sound", "action":"stop_song"}))
+        if event.key == pygame.K_o:
+            pygame.event.post(Event(CUSTOM, {"system":"sound", "action":"pause_song"}))
+        
+        if event.key == pygame.K_u:
+            pygame.event.post(Event(CUSTOM, {"system":"sound", "action":"unpause_song"}))
+        if event.key == pygame.K_z or event.key == pygame.K_x:
+            pygame.event.post(Event(CUSTOM, {"system":"sound", "action":"play_sound", "sound":"hit"}))
+
+        if event.key == pygame.K_q:
+            pygame.event.post(Event(CUSTOM, {SYS:DISP, ACTION:"change_res", "res": "960x540"}))
 
 
 

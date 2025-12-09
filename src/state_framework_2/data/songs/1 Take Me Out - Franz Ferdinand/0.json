@@ -1,0 +1,21 @@
+    {
+        "standard": 1,
+        "song": "Take Me Out",
+        "artist": "Franz Ferdinand",
+        "album": "FIXION",
+        "mapper":"Zedex",
+        "difficulty": 1,
+        "set_id": 1,
+        "map_id": 0,
+        "length": 100.00,
+        "bpm": 142,
+        "offset": 0.00,
+        "volume_overide": 0.5,
+        
+        "notes": [
+            {"time":1.250, "type":"tap", "lane":1},
+            {},
+            {}
+        ]
+
+    }

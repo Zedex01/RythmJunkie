@@ -2,7 +2,7 @@
 States classes
 
 """
-import pygame
+import pygame, json
 from pygame import *
 from src.states._state import State
 from src.player import Player
@@ -40,9 +40,9 @@ class Main(State):
         self.curr_btn = 0
         self.last_btn = len(self.btns) - 1
 
-        self.play_btn = Button("Play", Vector2(100,35), Vector2(30,80))
-        self.credits_btn = Button("Credits", Vector2(100,35), Vector2(30,120))
-        self.exit_btn = Button("Exit", Vector2(100,35), Vector2(30,160))
+        self.play_btn = Button("Play", (100,35), (30,80))
+        self.credits_btn = Button("Credits", (100,35), (30,120))
+        self.exit_btn = Button("Exit", (100,35), (30,160))
 
     def handle_events(self, events) -> bool:
         for event in events:
@@ -72,6 +72,7 @@ class Main(State):
                         elif self.btns[self.curr_btn] == "Exit":
                             pygame.event.post(Event(CUSTOM, {SYS:UTIL, ACTION:"quit"}))
 
+        self.play_btn.handle_events(events)
 
     def update(self, dt):
     #Apply changes to button states
@@ -123,9 +124,6 @@ class Credits(State):
     def __init__(self, state_machine):
         super().__init__(state_machine)
         self.name = "credits"
-
-        #Buttons
-        self.back_btn = Button("Back",Vector2(0,0), Vector2(0,0))
 
         #textbox
         self.text_box = pygame.Surface((self.screen_w*0.6,self.screen_h*0.5), SRCALPHA)
@@ -184,26 +182,19 @@ class SongSelect(State):
 
     def __init__(self, state_machine):
         super().__init__(state_machine)
+        
+        #Send out a request for the currently active set when loading the state
+        pygame.event.post(Event(CUSTOM, {SYS:SET, ACTION:"request_active_set"}))
 
+        #Set Track info to None
+        self.track_artist, self.track_name = None, None
+
+        self.set_root = None
 
         #Get paths
         self.data_dir = self.state_machine.data_dir
-        self.songs_dir = self.data_dir / "songs"
-
-        #List of sets within the song dir
-        self.sets = []
-
-        #itter through all songs and add them to sets.
-        for set in self.songs_dir.iterdir():
-            self.sets.append(set)
-
-        self.set_index = 0
-        self.max_index = len(self.sets) - 1
-        
-        #Set default active set (TODO: Make Random)
-        self.active_set = self.sets[self.set_index]
-
-        self._change_active_set = False
+        ui_path = self.data_dir / "skins" / "Builtin" / "SongSelect.png"
+        self.ui_bg = pygame.image.load(ui_path)
 
 
     def handle_events(self, events):
@@ -215,62 +206,71 @@ class SongSelect(State):
 
                 #Check for events from the input manager
                 if event.system == INPUT:
-                    if event.action == "menu-left":
-                        #Make sure to stay within valid set bounds
-                        if self.set_index > 0:
-                            self.set_index -= 1
-                        else:
-                            self.set_index = self.max_index
-                        self._change_active_set = True
+                    if event.action == "menu-left": 
+                        pygame.event.post(Event(CUSTOM, {SYS:SET, ACTION:"change_left"}))
 
-                    elif event.action == "menu-right":
-                        #Make sure to stay within valid set bounds
-                        if self.set_index < self.max_index:
-                            self.set_index += 1
-                        else:
-                            self.set_index = 0
-                        self._change_active_set = True
+                    elif event.action == "menu-right": 
+                        pygame.event.post(Event(CUSTOM, {SYS:SET, ACTION:"change_right"}))
 
-                    elif event.action == "menu-accept":
-                        pass
+                    elif event.action == "menu-accept":  pass
+                       
                     elif event.action == "menu-back":
                         #return to main menu
                         self.state_machine.change_state(Main(self.state_machine))
 
+                #Anytime there is a change to the active set update!
+                if event.system == SET:
+                    if event.action == "active_set" or event.action == "new_active_set":
+                        self.set_root = event.set_path
+                        self.update_set()
+
+
 
     def update(self, dt):
-        #If there is a change, update the active set
-        if self._change_active_set:
-            self._change_active_set = False
-            self.active_set = self.sets[self.set_index]
-            print("Active Set: ", self.active_set.name)
-    
+        pass
+
+
     def draw(self, screen):
         screen.fill((50,50,50))
 
         #get screen size dynamically
         width, height = screen.get_size()
 
+        #get center of screen
+        screen_cx, screen_cy = screen.get_rect().center
+
         #BackgroundSurface
         bg_surface = pygame.Surface((width, height), SRCALPHA)
-        #TODO: Load bg image from song
-        #screen.blit(bg_surface, (0,0))
 
-        #BorderSurface
-        ui_surface = pygame.Surface((width, height), SRCALPHA)
-        #Draw Top & Bottom Border (TODO: Replace image)
-        pygame.draw.rect(ui_surface, ("white"), ((0,0),(width,height*0.1))) #Top Bar
-        pygame.draw.rect(ui_surface, ("white"), ((0,height-height*0.1),(width,height*0.1))) #Bottom Bar
-        #Draw Display_name_box
-        display_name_bg_rect = pygame.Rect(0,0,width*0.25, height*0.1)
-        display_name_bg_rect.center = (width//2, height//10)
-        pygame.draw.rect(ui_surface, ("white"), display_name_bg_rect, border_radius=12)
-        pygame.draw.rect(ui_surface, ("black"), display_name_bg_rect, width = 4, border_radius=12)
+        #UI Surface
+        self.ui_bg = pygame.transform.scale(self.ui_bg, (width, height))
+        screen.blit(self.ui_bg, (0,0))
 
-        screen.blit(ui_surface, (0,0))
+        #AlbumSurface
 
-        #ButtonSurface
-        #AlbumSurface?
+        #Text_Surface
+        song_name_surface = pygame.Surface((width*0.27, height*0.15), SRCALPHA)
+        song_name_surface.fill((0,0,0,0))
+        song_name_surface_rect = song_name_surface.get_rect() #Def pos will be 0, 0
+
+        #Set pos on screen
+        song_name_surface_rect.center = screen_cx, height*0.14
+        screen.blit(song_name_surface, song_name_surface_rect)
+        
+        if self.set_root:
+        #song_name
+            song_text = self.small_font.render(self.track_name, True, (0,0,0))
+            artist_text = self.super_small_font.render(self.track_artist, True, (0,0,0))
+            song_text_rect = song_text.get_rect() #Gets Size
+            artist_text_rect = artist_text.get_rect() #Gets Size
+            song_text_rect.center = song_name_surface_rect.centerx, song_name_surface_rect.centery - (height*0.025)
+            artist_text_rect.center = song_name_surface_rect.centerx, song_name_surface_rect.centery + (height*0.025)
+            screen.blit(song_text, song_text_rect)
+            screen.blit(artist_text, artist_text_rect)
+
+        #artist_name
+
+        #Button Surface
 
         #make surface
         set_name_surface = pygame.Surface((width*0.6,height*0.2), SRCALPHA)
@@ -278,10 +278,16 @@ class SongSelect(State):
         #make surface rect
         set_name_surface_rect = set_name_surface.get_rect(center=(screen.get_rect().center[0], height*0.2))
 
-        set_name_surface.fill((255,255,255,255))
-        #screen.blit(set_name_surface, set_name_surface_rect)
 
-        
+    def update_set(self):
+        chart = self.set_root / "0.json"
+
+        #Get info:
+        with chart.open("r", encoding="utf-8") as f:
+            track = json.load(f)
+
+        self.track_name = track["song"]
+        self.track_artist = track["artist"]   
 
 
 
@@ -403,3 +409,6 @@ class Pause(State):
 
         #Blit to screen
         screen.blit(self.surface, (self.surface_padding,self.surface_padding))
+
+
+

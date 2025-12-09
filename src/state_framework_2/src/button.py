@@ -6,15 +6,20 @@ from pathlib import Path
 
 """
  Main purposes is to handle the creation / drawing of the button, no need to handle inputs directly???
+ TODO: 
+  - Add Mouse Hit Detection
+  - Let anchor be center
 """
 
 class Button():
-    def __init__(self, text: str, size: Vector2, pos: Vector2):
+    def __init__(self, text: str, size: tuple, pos: tuple, callback_function = None):
         self.text = text
         self.pos = pos
-        self.size_default = size
+        self.size_default = Vector2(size)
         self.size = self.size_default
         self.size_selected = self.size* 1.05
+
+        self.rect = pygame.Rect(pos, size)
         
         self.surface = pygame.Surface(size, SRCALPHA)
 
@@ -30,7 +35,13 @@ class Button():
         self.small_font = pygame.font.Font(ubuntu, 24)
         self.super_small_font = pygame.font.Font(ubuntu,12)
 
-    def handle_events(self, events): pass
+    def handle_events(self, events): 
+        #get cursor location
+        mouse_pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos):
+            print("On ", self.text)
+
+
 
     def update(self, dt): 
         if self.state is not self.last_state:
@@ -41,6 +52,7 @@ class Button():
             if self.state == "selected":
                 self.surface = pygame.Surface(self.size_selected, SRCALPHA)
                 self.last_state = self.state
+
 
     def draw(self, screen): 
         self.surface.fill((64,64,64,0))
@@ -55,6 +67,7 @@ class Button():
         
         #place the text in the middle of the surface
         self.surface.blit(button_text, text_rect)
+        
         #Draw on screen
         screen.blit(self.surface, self.pos)
 

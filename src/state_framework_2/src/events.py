@@ -1,8 +1,14 @@
+import pygame
+
 """
 Custom Events File
-"""
 
-import pygame
+CUSTOM
+    SYS : system
+        ACTION: action
+            args : arg
+
+"""
 
 #Base Custom Event
 CUSTOM = pygame.USEREVENT + 0
@@ -13,8 +19,12 @@ INPUT = "input"
 SOUND = "sound"
 STATE = "state"
 UTIL = "util"
+DISP = "display"
+SET = "set"
 
 ACTION = "action"
+
+
 
 
 

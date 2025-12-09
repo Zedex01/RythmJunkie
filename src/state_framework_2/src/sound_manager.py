@@ -18,6 +18,13 @@ General Flow:
     recieve event(s)
         
         about 20-25 ms of latency on press to click sound
+
+        Songs:
+         - play on game load, persistant between menus
+         - Changing song in song select changes the displayed song
+
+        Sounds:
+
 """
 
 class SoundManager():
@@ -47,7 +54,7 @@ class SoundManager():
     def handle_events(self, events: list) -> None: 
         for event in events:
             if event.type == CUSTOM:
-                if event.system == "sound":
+                if event.system == SOUND:
                     #Hit Sounds
                     if event.action == "play_sound":
                         if event.sound == "hit":
@@ -56,10 +63,6 @@ class SoundManager():
                             if channel:
                                 #Play hit sound
                                 channel.play(self.hit_sound)
-
-                    #Song Control
-                    elif event.action == "load_song":
-                        self.load_song(event.set_id)
 
                     elif event.action == "play_song":
                         try:
@@ -105,7 +108,13 @@ class SoundManager():
                     elif event.action == "sound_volume_down":
                         if self.sound_volume > 0.00:
                             self.sound_volume -= 0.05
-                    
+
+                if event.system == SET:
+                    #recv event for a new set, load the song.
+                    if event.action == "new_active_set":
+                        self.load_song(event.set_path)
+
+
     def update(self, dt):
         # === Volume Levels ===
         #Check volume is within 0.02 of mixer audio
@@ -136,16 +145,24 @@ class SoundManager():
             print("Music: ", round(self.music_volume, 2))
             print("Sound: ", round(self.sound_volume, 2)) 
             
-    def load_song(self, set_id: str) -> None:
-
-        #Search sets dir looking for set id and return set dir
-        set_dir = next((d for d in self.songs_dir.iterdir() if d.is_dir() and d.name.startswith(str(set_id))), None)
-        
+    def load_song(self, set_path: Path) -> None:
         #build song path
-        audio =  set_dir / "audio.mp3"
+        audio =  set_path / "audio.mp3"
+
+        #TODO: Update to allow other maps
+        chart = set_path / "0.json"
+
+        #Get info:
+        with chart.open("r", encoding="utf-8") as f:
+            track = json.load(f)
+
+        t_name = track["song"]
+        t_artist = track["artist"]       
 
         try:
-            pygame.mixer.music.load(audio)
+            pygame.mixer.music.load(str(audio))
+            print(f"loaded {t_name} by {t_artist}.")
+
         except Exception as e:
             print("Song Load Error: ", e)
 
